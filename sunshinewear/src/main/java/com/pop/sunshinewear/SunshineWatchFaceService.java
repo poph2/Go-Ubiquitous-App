@@ -36,6 +36,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 
@@ -62,6 +63,8 @@ import java.util.concurrent.TimeUnit;
  * low-bit ambient mode, the text is drawn without anti-aliasing in ambient mode.
  */
 public class SunshineWatchFaceService extends CanvasWatchFaceService {
+
+    private static String TAG = SunshineWatchFaceService.class.getSimpleName();
 
     private static final Typeface NORMAL_TYPEFACE =
             Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
@@ -135,10 +138,10 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
         /**
          * Weather information from the mobile app
          */
-        static final String KEY_PATH = "/weather";
-        //static final String KEY_WEATHER_ID = "KEY_WEATHER_ID";
-        static final String KEY_MAX_TEMP = "KEY_MAX_TEMP";
-        static final String KEY_MIN_TEMP = "KEY_MIN_TEMP";
+//        static final String KEY_PATH = "/weather";
+//        static final String KEY_WEATHER_ID = "KEY_WEATHER_ID";
+//        static final String KEY_MAX_TEMP = "KEY_MAX_TEMP";
+//        static final String KEY_MIN_TEMP = "KEY_MIN_TEMP";
 
         float mTimeXOffset;
         float mTimeYOffset;
@@ -179,6 +182,8 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
         @Override
         public void onCreate(SurfaceHolder holder) {
             super.onCreate(holder);
+
+            Log.d(TAG, "OnCreate");
 
             setWatchFaceStyle(new WatchFaceStyle.Builder(SunshineWatchFaceService.this)
                     .setCardPeekMode(WatchFaceStyle.PEEK_MODE_VARIABLE)
@@ -453,6 +458,8 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
         public void onConnected(@Nullable Bundle bundle) {
             Wearable.DataApi.addListener(mGoogleApiClient, Engine.this);
 
+            Log.d(TAG, "Connected");
+
             requestWeatherInfo();
         }
 
@@ -469,13 +476,17 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
                     DataMap dataMap = DataMapItem.fromDataItem(dataEvent.getDataItem()).getDataMap();
                     String path = dataEvent.getDataItem().getUri().getPath();
 
+                    Log.d(TAG, path);
+
                     if (path.equals(WEATHER_INFO_PATH)) {
                         if (dataMap.containsKey(KEY_HIGH)) {
                             mMaxTemp = dataMap.getString(KEY_HIGH);
+                            Log.d(TAG, "High = " + mMaxTemp);
                         }
 
                         if (dataMap.containsKey(KEY_LOW)) {
                             mMinTemp = dataMap.getString(KEY_LOW);
+                            Log.d(TAG, "Low = " + mMinTemp);
                         }
 
                         if (dataMap.containsKey(KEY_WEATHER_ID)) {
@@ -485,6 +496,7 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
                             float scaledWidth = (mMaxTempPaint.getTextSize() / icon.getHeight()) * icon.getWidth();
                             mWeatherImage = Bitmap.createScaledBitmap(icon, (int) scaledWidth, (int) mMaxTempPaint.getTextSize(), true);
 
+                            Log.d(TAG, "WeatherId = " + weatherId);
                         }
 
                         invalidate();
@@ -508,9 +520,9 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
                         @Override
                         public void onResult(DataApi.DataItemResult dataItemResult) {
                             if (!dataItemResult.getStatus().isSuccess()) {
-                                //Log.d(TAG, "Failed asking phone for weather data");
+                                Log.d(TAG, "Failed asking phone for weather data");
                             } else {
-                                //Log.d(TAG, "Successfully asked for weather data");
+                                Log.d(TAG, "Successfully asked for weather data");
                             }
                         }
                     });
