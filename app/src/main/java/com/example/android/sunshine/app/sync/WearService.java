@@ -1,6 +1,7 @@
 package com.example.android.sunshine.app.sync;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -19,6 +20,16 @@ public class WearService extends WearableListenerService {
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
+
+        Log.d(TAG, "Data Changed");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(),"Data Changed",Toast.LENGTH_LONG).show();
+            }
+        }).start();
+
         for (DataEvent dataEvent : dataEvents) {
             if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
                 String path = dataEvent.getDataItem().getUri().getPath();

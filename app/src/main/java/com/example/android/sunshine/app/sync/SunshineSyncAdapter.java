@@ -22,12 +22,15 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.android.sunshine.app.BuildConfig;
@@ -215,6 +218,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                                         String locationSetting)
             throws JSONException {
 
+        Log.d(LOG_TAG, "Sync Started");
+
         // Now we have a String representing the complete forecast in JSON Format.
         // Fortunately parsing is easy:  constructor takes the JSON string and converts it
         // into an Object hierarchy for us.
@@ -372,6 +377,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 updateWidgets();
                 updateMuzei();
                 notifyWeather();
+                Utility.updateWatchFace(getContext());
             }
             Log.d(LOG_TAG, "Sync Complete. " + cVVector.size() + " Inserted");
             setLocationStatus(getContext(), LOCATION_STATUS_OK);
@@ -616,6 +622,17 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param context The context used to access the account service
      */
     public static void syncImmediately(Context context) {
+
+        final Context c = context;
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(c,"Sync Immediately",Toast.LENGTH_LONG).show();
+            }
+        });//.start();
+
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);

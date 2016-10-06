@@ -107,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                 startService(intent);
             }
         }
+
+        SunshineSyncAdapter.syncImmediately(this);
     }
 
     @Override

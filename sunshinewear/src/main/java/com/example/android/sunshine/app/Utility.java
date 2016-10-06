@@ -1,4 +1,4 @@
-package com.pop.sunshinewear;
+package com.example.android.sunshine.app;
 
 import android.content.res.Resources;
 

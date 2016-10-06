@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.pop.sunshinewear;
+package com.example.android.sunshine.app;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,6 +41,7 @@ import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
@@ -51,6 +52,7 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
+import com.google.gson.Gson;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
@@ -205,6 +207,35 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
             mMinTempPaint = createTextPaint(resources.getColor(R.color.primary_light), NORMAL_TYPEFACE);
 
             mCalendar = Calendar.getInstance();
+
+            checkGooglePlayServices();
+
+            mGoogleApiClient.connect();
+        }
+
+        private void checkGooglePlayServices() {
+            GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+            int status = googleApiAvailability.isGooglePlayServicesAvailable(getApplicationContext());
+
+            if(status == ConnectionResult.SUCCESS) {
+                Log.d(TAG, "checkGooglePlayServices - SUCCESS");
+            }
+            else if(status == ConnectionResult.SERVICE_MISSING) {
+                Log.d(TAG, "checkGooglePlayServices - SERVICE_MISSING");
+            }
+            else if(status == ConnectionResult.SERVICE_UPDATING) {
+                Log.d(TAG, "checkGooglePlayServices - SERVICE_UPDATING");
+            }
+            else if(status == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
+                Log.d(TAG, "checkGooglePlayServices - SERVICE_VERSION_UPDATE_REQUIRED");
+            }
+            else if(status == ConnectionResult.SERVICE_DISABLED) {
+                Log.d(TAG, "checkGooglePlayServices - SERVICE_DISABLED");
+            }
+            else if(status == ConnectionResult.SERVICE_INVALID) {
+                Log.d(TAG, "checkGooglePlayServices - SERVICE_INVALID");
+            }
+
         }
 
         private Paint createTextPaint(int textColor, Typeface typeface) {
@@ -218,6 +249,7 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
         @Override
         public void onDestroy() {
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
+            mGoogleApiClient.disconnect();
             super.onDestroy();
         }
 
@@ -233,7 +265,10 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
         public void onVisibilityChanged(boolean visible) {
             super.onVisibilityChanged(visible);
 
+            Log.d(TAG, "onVisibilityChanged");
+
             if (visible) {
+                Log.d(TAG, "Visible");
                 registerReceiver();
 
                 // Update time zone in case it changed while we weren't visible.
@@ -244,6 +279,7 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
                 unregisterReceiver();
 
                 if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                    Log.d(TAG, "Is Connected");
                     Wearable.DataApi.removeListener(mGoogleApiClient, this);
                     mGoogleApiClient.disconnect();
                 }
@@ -348,9 +384,12 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
                     break;
                 case TAP_TYPE_TAP:
                     // The user has completed the tap gesture.
+                    Log.d(TAG, "Screen tapped");
+                    requestWeatherInfo();
                     mTapCount++;
                     mBackgroundPaint.setColor(resources.getColor(mTapCount % 2 == 0 ?
                             R.color.background : R.color.background2));
+
                     break;
             }
             invalidate();
@@ -465,11 +504,12 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
 
         @Override
         public void onConnectionSuspended(int i) {
-
+            Log.d(TAG, "Connection Suspended");
         }
 
         @Override
         public void onDataChanged(DataEventBuffer dataEventBuffer) {
+            Log.d(TAG, "Data Changed");
             for (DataEvent dataEvent : dataEventBuffer) {
                 if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
 
@@ -477,6 +517,7 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
                     String path = dataEvent.getDataItem().getUri().getPath();
 
                     Log.d(TAG, path);
+                    Log.d(TAG, new Gson().toJson(path));
 
                     if (path.equals(WEATHER_INFO_PATH)) {
                         if (dataMap.containsKey(KEY_HIGH)) {
@@ -507,12 +548,19 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
 
         @Override
         public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+            Log.d(TAG, "Connection Failed - " + connectionResult );
         }
 
         public void requestWeatherInfo() {
+
+            Log.d(TAG, "Weather information requested");
+
+            Log.d(TAG, "mGoogleApiClient.isConnected() -- " + mGoogleApiClient.isConnected());
+
+            Log.d(TAG, "UUID.randomUUID() -- " + UUID.randomUUID().toString() + " - " + Long.toString(System.currentTimeMillis()));
+
             PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(WEATHER_PATH);
-            putDataMapRequest.getDataMap().putString(KEY_UUID, UUID.randomUUID().toString());
+            putDataMapRequest.getDataMap().putString(KEY_UUID, UUID.randomUUID().toString() + " - " + Long.toString(System.currentTimeMillis()));
             PutDataRequest request = putDataMapRequest.asPutDataRequest();
 
             Wearable.DataApi.putDataItem(mGoogleApiClient, request)

@@ -180,6 +180,23 @@
         <service
             android:name=".gcm.RegistrationIntentService"
             android:exported="false"></service>
+        <service
+            android:name=".sync.WearService">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <!--data android:scheme="wear" android:host="*"
+                    android:path="/weather" /-->
+            </intent-filter>
+        </service>
+        <service
+            android:name=".sync.WearService2"
+            android:exported="false">
+
+        </service>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
