@@ -117,8 +117,9 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        Log.d(LOG_TAG, "Starting sync");
+        Log.d(LOG_TAG, "onPerformSync - Starting sync");
         String locationQuery = Utility.getPreferredLocation(getContext());
+        Log.d(LOG_TAG, "onPerformSync - locationQuery - " + locationQuery);
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -154,10 +155,14 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
             URL url = new URL(builtUri.toString());
 
+            Log.d(LOG_TAG, "onPerformSync - builtUri - " + builtUri.toString());
+
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
+
+            Log.d(LOG_TAG, "onPerformSync - Socket Connected");
 
             // Read the input stream into a String
             InputStream inputStream = urlConnection.getInputStream();
@@ -257,6 +262,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
 
+            Log.d(LOG_TAG, "forecastJsonStr - " + forecastJsonStr);
+
             // do we have an error?
             if ( forecastJson.has(OWM_MESSAGE_CODE) ) {
                 int errorCode = forecastJson.getInt(OWM_MESSAGE_CODE);
@@ -342,6 +349,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 high = temperatureObject.getDouble(OWM_MAX);
                 low = temperatureObject.getDouble(OWM_MIN);
 
+                Log.d(LOG_TAG, "Sync Finished");
+
                 ContentValues weatherValues = new ContentValues();
 
                 weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationId);
@@ -354,6 +363,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP, low);
                 weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC, description);
                 weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, weatherId);
+
+                Log.d(LOG_TAG, "i = " + i);
 
                 if (i == 0) {
                     sendWeatherInfoToWearable(high, low, weatherId);
@@ -377,7 +388,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 updateWidgets();
                 updateMuzei();
                 notifyWeather();
-                Utility.updateWatchFace(getContext());
+                //Utility.updateWatchFace(getContext());
             }
             Log.d(LOG_TAG, "Sync Complete. " + cVVector.size() + " Inserted");
             setLocationStatus(getContext(), LOCATION_STATUS_OK);
@@ -632,6 +643,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 Toast.makeText(c,"Sync Immediately",Toast.LENGTH_LONG).show();
             }
         });//.start();
+
+        Log.d("SunshineSyncAdapter", "Sync Immediately");
 
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);

@@ -45,8 +45,8 @@
     <!-- Key name for storing location status in SharedPreferences -->
     <string name="pref_location_status_key" translatable="false">loc-status</string>
 
-    <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
-    <string name="pref_location_default" translatable="false">94043</string>
+    <!-- City name for location preference [CHAR LIMIT=NONE] -->
+    <string name="pref_location_default" translatable="false">fareham,uk</string>
 
     <!-- Strings used when displaying the state of the Location in settings -->
     <string name="pref_location_error_description">Invalid Location (<xliff:g id="location_setting">%1$s</xliff:g>)"</string>

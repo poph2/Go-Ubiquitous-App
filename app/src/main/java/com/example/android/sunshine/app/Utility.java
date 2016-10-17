@@ -24,7 +24,6 @@ import android.preference.PreferenceManager;
 import android.text.format.Time;
 
 import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
-import com.example.android.sunshine.app.sync.WearService2;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -579,9 +578,9 @@ public class Utility {
     }
 
 
-    static public void updateWatchFace(Context c) {
-        Intent intent = new Intent(c, WearService2.class);
-        intent.setAction(WearService2.ACTION_UPDATE_WATCHFACE);
-        c.startService(intent);
-    }
+//    static public void updateWatchFace(Context c) {
+//        Intent intent = new Intent(c, WearService2.class);
+//        intent.setAction(WearService2.ACTION_UPDATE_WATCHFACE);
+//        c.startService(intent);
+//    }
 }

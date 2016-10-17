@@ -323,6 +323,8 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
                     ? R.dimen.digital_divider_y_offset_round : R.dimen.digital_divider_y_offset);
             mBitmapYOffset = resources.getDimension(isRound
                     ? R.dimen.digital_weather_y_offset_round : R.dimen.digital_weather_y_offset);
+            mTempHighYOffset = resources.getDimension(isRound
+                    ? R.dimen.digital_weather_y_offset_round : R.dimen.digital_weather_y_offset);
 
             float timeTextSize = resources.getDimension(isRound
                     ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
@@ -419,6 +421,8 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
                     ? String.format("%d:%02d", mCalendar.get(Calendar.HOUR), mCalendar.get(Calendar.MINUTE))
                     : String.format("%d:%02d:%02d", mCalendar.get(Calendar.HOUR), mCalendar.get(Calendar.MINUTE), mCalendar.get(Calendar.SECOND));
 
+            mTimeXOffset = bounds.centerX() - (mTimePaint.measureText(timeText) / 2);
+
             canvas.drawText(timeText, mTimeXOffset, mTimeYOffset, mTimePaint);
         }
 
@@ -442,6 +446,7 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
         }
 
         public void drawTemp(Canvas canvas, Rect bounds) {
+
             if (mMaxTemp != null && mMinTemp != null && mWeatherImage != null) {
 
                 float highTextLen = mMaxTempPaint.measureText(mMaxTemp);
@@ -574,6 +579,9 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
                             }
                         }
                     });
+
+            Log.d(TAG, "UUID.randomUUID() -- " + UUID.randomUUID().toString() + " - " + Long.toString(System.currentTimeMillis()));
+
         }
     }
 }

@@ -184,14 +184,12 @@
             android:name=".sync.WearService">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
-                <!--data android:scheme="wear" android:host="*"
-                    android:path="/weather" /-->
+                <data android:scheme="wear" android:host="*"
+                    android:path="/weather" />
             </intent-filter>
         </service>
         <service
-            android:name=".sync.WearService2"
-            android:exported="false">
-
+            android:name=".sync.WearService2">
         </service>
 
         <meta-data
