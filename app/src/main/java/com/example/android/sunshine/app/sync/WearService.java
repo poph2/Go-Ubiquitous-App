@@ -25,43 +25,12 @@ public class WearService extends WearableListenerService {
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
 
-        Log.d(TAG, "Data Changed");
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Toast.makeText(getApplicationContext(),"Data Changed",Toast.LENGTH_LONG).show();
-//            }
-//        }).start();
-
-
-        Handler handler = new Handler(Looper.getMainLooper());
-
-        handler.post(new Runnable() {
-
-            @Override
-            public void run() {
-                Toast.makeText(WearService.this.getApplicationContext(),"Data requested from wear...",Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
         for (DataEvent dataEvent : dataEvents) {
             if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
                 String path = dataEvent.getDataItem().getUri().getPath();
                 Log.d(TAG, path);
                 if (path.equals(WEATHER_PATH)) {
-
-                    DataMap dataMap = DataMapItem.fromDataItem(dataEvent.getDataItem()).getDataMap();
-
                     SunshineSyncAdapter.syncImmediately(this);
-
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(WearService.this.getApplicationContext(),"Data requested from wear...",Toast.LENGTH_SHORT).show();
-                        }
-                    });
                 }
             }
         }

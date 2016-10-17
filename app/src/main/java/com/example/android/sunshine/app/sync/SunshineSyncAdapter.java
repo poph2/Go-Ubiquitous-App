@@ -388,7 +388,6 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 updateWidgets();
                 updateMuzei();
                 notifyWeather();
-                //Utility.updateWatchFace(getContext());
             }
             Log.d(LOG_TAG, "Sync Complete. " + cVVector.size() + " Inserted");
             setLocationStatus(getContext(), LOCATION_STATUS_OK);
@@ -635,16 +634,6 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     public static void syncImmediately(Context context) {
 
         final Context c = context;
-
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(c,"Sync Immediately",Toast.LENGTH_LONG).show();
-            }
-        });//.start();
-
-        Log.d("SunshineSyncAdapter", "Sync Immediately");
 
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
